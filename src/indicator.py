@@ -32,7 +32,7 @@ class Indicators():
         self._indicator_signals[indicator]['sell_operator'] = condition_sell
 
     def get_indicator_signals(self, indicator: Optional[str]) -> Dict:
-        if indictaor and indicator in self._indicator_signals:
+        if indicator and indicator in self._indicator_signals:
             return self._indicator_signals[indicator]
         else:
             return self._indicator_signals
@@ -142,4 +142,21 @@ class Indicators():
         return self._frame
 
     def refresh(self):
-        pass
+
+        # update groups
+        self._price_groups = self._stock_frame.symbol_groups
+
+        # loop through all the stored indicators
+        for indicator in self._current_indicators:
+
+            indicator_arguments = self._current_indicators[indicator]['args']
+            indicator_function = self._current_indicators[indicator]['func']
+
+            # update the colums
+            indicator_function(**indicator_arguments)
+
+    def check_signals(self) -> Union[pd.DataFrame, None]:
+        signals_df = self._stock_frame._check_signals(
+            indicators=self._indicator_signals)
+
+        return signals_df
