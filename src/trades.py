@@ -140,3 +140,117 @@ class Trade():
 
         if not stop_limit:
             self.add_stop_loss(stop_size=profit_size, percentage=percentage)
+
+    # STOP LOSS
+    def add_stop_loss(self, stop_size: float, percentage: bool = False) -> bool:
+
+        if not self._triggered_added:
+            self._convert_to_trigger()
+
+        if self.order_type == 'mkt':
+            pass
+        elif self.order_type == 'lmt':
+            price = self.price
+
+        if percentage:
+            adjustment = 1.0 - stop_size
+            new_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=True)
+        else:
+            adjustment = -stop_size
+            new_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=False)
+
+        # Stop loss order schema
+        stop_loss_order = {
+            "orderType": "STOP",
+            "session": "NORMAL",
+            "duration": "DAY",
+            "stopPrice": new_price,
+            "orderStrategyType": "SINGLE",
+            "orderLegCollection": [
+                {
+                    "instruction": self.order_instructions[self.enter_or_exit_opposite][self.side],
+                    "quality": self.order_size,
+                    "instrument": {
+                        "symbol": self.symbol,
+                        "assetType": self.asset_type
+                    }
+                }
+            ]
+        }
+
+        self.stop_loss_order = stop_loss_order
+
+        self.order['childOrderStrategies'].append(self.stop_loss_order)
+
+        return True
+
+    # STOP LIMIT
+    def add_stop_limit(self, stop_size: float, limit_size: float, stop_percentage: bool = False, limit_percentage: bool = False) -> bool:
+
+        if not self._triggered_added:
+            self._convert_to_trigger()
+
+        if self.order_type == 'mkt':
+            pass
+        elif self.order_type == 'lmt':
+            price = self.price
+
+        if stop_percentage:
+            adjustment = 1.0 - stop_size
+            stop_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=True)
+        else:
+            adjustment = -stop_size
+            stop_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=False)
+
+        if limit_percentage:
+            adjustment = 1.0 - limit_size
+            limit_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=True)
+        else:
+            adjustment = -limit_size
+            limit_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=False)
+
+        # Stop limit order schema
+        stop_loss_order = {
+            "orderType": "STOP_LIMIT",
+            "session": "NORMAL",
+            "duration": "DAY",
+            "price": limit_price,
+            "stopPrice": stop_price,
+            "orderStrategyType": "SINGLE",
+            "orderLegCollection": [
+                {
+                    "instruction": self.order_instructions[self.enter_or_exit_opposite][self.side],
+                    "quality": self.order_size,
+                    "instrument": {
+                        "symbol": self.symbol,
+                        "assetType": self.asset_type
+                    }
+                }
+            ]
+        }
+
+        self.stop_limit_order = stop_limit_order
+        self.order['childOrderStrategies'].append(self.stop_limit_order)
+
+        return True
+
+    # private function for calculating new  price
+    def _calculate_new_price(self, price: float, adjustment: float, percentage: bool) -> float:
+
+        if percentage:
+            new_price = price * adjustment
+        else:
+            new_price = price + adjustment
+
+        if new_price < 1:
+            new_price = round(new_price, 4)
+        else:
+            new_price = round(new_price, 2)
+
+        return new_price
