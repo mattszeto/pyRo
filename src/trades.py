@@ -254,3 +254,123 @@ class Trade():
             new_price = round(new_price, 2)
 
         return new_price
+
+    def add_take_profit(self, profit_size: float, percentage: bool = False) -> bool:
+
+        if not self._triggered_added:
+            self._convert_to_trigger()
+
+        if self.order_type == 'mkt':
+            pass
+        elif self.order_type == 'lmt':
+            price = self.price
+
+        if percentage:
+            adjustment = 1.0 - profit_size
+            profit_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=True)
+        else:
+            adjustment = -profit_size
+            profit_price = self._calculate_new_price(
+                price=price, adjustment=adjustment, percentage=False)
+
+        # Build the order.
+        take_profit_order = {
+            "orderType": "LIMIT",
+            "session": "NORMAL",
+            "price": profit_price,
+            "duration": "DAY",
+            "orderStrategyType": "SINGLE",
+            "orderLegCollection": [
+                {
+                    "instruction": self.order_instructions[self.enter_or_exit_opposite][self.side],
+                    "quantity": self.order_size,
+                    "instrument": {
+                        "symbol": self.symbol,
+                        "assetType": self.asset_type
+                    }
+                }
+            ]
+        }
+
+        # Add the order
+        self.take_profit_order = take_profit_order
+        self.order['childOrderStrategies'].append(self.take_profit_order)
+
+        return True
+
+    def _convert_to_trigger(self):
+
+        if self.order and self._triggered_added == false:
+            self.order['orderStrategyType'] = 'TRIGGER'
+            self.order['childOrderStrategies'] = []
+            self._triggered_added = True
+
+    def modify_session(self, session: str) -> None:
+
+        if session in ['am', 'pm', 'normal', 'seamless']:
+            self.order['session'] = session.upper()
+        else:
+            raise ValueError("Invalid Session")
+
+    # Getter method
+    @property
+    def order_response(self) -> dict:
+
+        return self._order_response
+
+    @order_response.setter
+    def order_response(self, order_response_dict: dict) -> None:
+
+        self._order_response = order_response_dict
+
+    def _generate_order_id(self) -> str:
+
+        if self.order:
+
+            order_id = "{symbol}_{side}_{enter_or_exit}_{timestamp}"
+
+            order_id = order_id.format(
+                symbol=self.symbol,
+                side=self.side,
+                enter_or_exit=self.enter_or_exit,
+                timestamp=datetime.now().timestamp()
+            )
+
+            return order_id
+
+        else:
+
+            return ""
+
+    def add_leg(self, order_leg_id: int, symbol: str, quantity: int, asset_type: str, sub_asset_type: str = None) -> List[Dist]:
+
+        # Define the Leg
+
+        leg = {}
+        leg['instrument']['symbol'] = symbol
+        leg['instrument']['assetType'] = asset_type
+        leg['quanity'] = quantity
+
+        if sub_asset_type:
+            leg['instrument']['subAssetType'] = sub_asset_type
+
+        if order_leg_id == 0:
+            self.instrument(
+                symbol=symbol,
+                asset_type=asset_type,
+                quantity=quantity,
+                sub_asset_type=sub_asset_type,
+                order_leg_id=0
+            )
+
+        else:
+            order_leg_collection: list = self.order['orderLegCollection']
+            order_leg_collection.insert(order_leg_id, leg)
+
+        return self.order['orderLegCollection']
+
+    @property
+    def number_of_legs(self) -> int:
+
+        return len(self.order['orderLegCollection'])
