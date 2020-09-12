@@ -1,10 +1,22 @@
-from typing import Union
-from typing import Dict
-from typing import List
-from datetime import timezone
+import json
+import time as time_true
+import pprint
+import pathlib
+import pandas as pd
+
 from datetime import time
 from datetime import datetime
-import pandas as pd
+from datetime import timezone
+from datetime import timedelta
+
+from typing import List
+from typing import Dict
+from typing import Union
+from typing import Optional
+
+from pyrobot.trades import Trade
+from pyrobot.portfolio import Portfolio
+from pyrobot.stock_frame import StockFrame
 
 from td.client import TDClient
 from td.utils import TDUtilities
@@ -12,9 +24,9 @@ from td.utils import TDUtilities
 milliseconds_since_epoch = TDUtilities().milliseconds_since_epoch
 
 
-class PyRo():
+class PyRobot():
 
-    def __init__(self, client_id: str, redirect_uri: str, credentials_path: str = None, trading_account: str = None) -> None:
+    def __init__(self, client_id: str, redirect_uri: str, credentials_path: str = None, trading_account: str = None, paper_trading: bool = True) -> None:
 
         self.trading_account: str = trading_account
         self.client_id: str = client_id
@@ -24,6 +36,7 @@ class PyRo():
         self.trades: dict = {}
         self.historical_prices: dict = {}
         self.stock_frame = None
+        self.paper_trading = paper_trading
 
     def _create_session(self) -> TDClient:
         td_client = TDClient(
