@@ -4,6 +4,9 @@ from typing import List
 from typing import Optional
 
 
+from td.client import TDClient
+
+
 class Portfolio():
 
     def __init__(self, account_number: str = None):
@@ -44,7 +47,7 @@ class Portfolio():
 
     def remove_positons(self, symbol: str) -> Tuple[bool, str]:
 
-        if symobol in self.positons:
+        if symbol in self.positons:
             del self.positons[symbol]
             return (True, "{Symbol} was successfully removed.".format(symbol=symbol))
         else:
@@ -65,6 +68,20 @@ class Portfolio():
             return True
         elif (purchase_price >= current_price):
             return False
+
+    @property
+    def td_client(self) -> TDClient:
+
+        # returns TDClient -- authenticated session with TD API
+
+        return self._td_client
+
+    @td_client.setter
+    def td_client(self, td_client: TDClient) -> None:
+
+        # arguements: td_client - authenticated session with TD API
+
+        self._td_client: TDClient = td_client
 
     def total_allocation(self):
         pass

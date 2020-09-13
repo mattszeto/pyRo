@@ -133,3 +133,4 @@ dmypy.json
 configs/
 
 setup.py
+td_state.json

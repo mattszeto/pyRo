@@ -93,13 +93,27 @@ class PyRobot():
             return False
 
     def create_portfolio(self):
-        pass
+
+        # init a new portfolio object
+        self.portfolio = Portfolio(account_number=self.trading_account)
+
+        # assign client (td ameritrade api client)
+        self.portfolio.td_client = self.session
+
+        return self.portfolio
 
     def create_trade(self):
         pass
 
     def grab_current_quotes(self) -> dict:
-        pass
+
+        # grab all symbols
+        symbols = self.portfolio.positions.keys()
+
+        # grab quotes
+        quotes = self.session.get_quotes(instruments=list(symbols))
+
+        return quotes
 
     def grab_hiostorical_prices(self) -> List[Dict]:
         pass
