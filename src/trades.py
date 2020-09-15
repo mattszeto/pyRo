@@ -302,7 +302,7 @@ class Trade():
 
     def _convert_to_trigger(self):
 
-        if self.order and self._triggered_added == false:
+        if self.order and self._triggered_added == False:
             self.order['orderStrategyType'] = 'TRIGGER'
             self.order['childOrderStrategies'] = []
             self._triggered_added = True

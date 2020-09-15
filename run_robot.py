@@ -105,7 +105,7 @@ stock_frame = trading_robot.create_stock_frame(
 
 pprint.pprint(stock_frame.frame.head(n=20))
 
-# Create a trade
+# Create a Trade object
 new_trade = trading_robot.create_trade(
     trade_id='long_msft',
     enter_or_exit='enter',
@@ -133,5 +133,4 @@ new_trade.add_stop_loss(
     percentage=False
 )
 
-
-pprint.pprint(new_trade.order)
+# pprint.pprint(new_trade.order)
