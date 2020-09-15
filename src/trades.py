@@ -148,6 +148,7 @@ class Trade():
             self._convert_to_trigger()
 
         if self.order_type == 'mkt':
+            # need to grab market price
             pass
         elif self.order_type == 'lmt':
             price = self.price
@@ -216,7 +217,7 @@ class Trade():
                 price=price, adjustment=adjustment, percentage=False)
 
         # Stop limit order schema
-        stop_loss_order = {
+        stop_limit_order = {
             "orderType": "STOP_LIMIT",
             "session": "NORMAL",
             "duration": "DAY",
@@ -343,7 +344,7 @@ class Trade():
 
             return ""
 
-    def add_leg(self, order_leg_id: int, symbol: str, quantity: int, asset_type: str, sub_asset_type: str = None) -> List[Dist]:
+    def add_leg(self, order_leg_id: int, symbol: str, quantity: int, asset_type: str, sub_asset_type: str = None) -> List[dict]:
 
         # Define the Leg
 
