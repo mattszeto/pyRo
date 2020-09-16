@@ -14,9 +14,9 @@ from typing import Dict
 from typing import Union
 from typing import Optional
 
-from pyrobot.trades import Trade
-from pyrobot.portfolio import Portfolio
-from pyrobot.stock_frame import StockFrame
+from trades import Trade
+from portfolio import Portfolio
+from stock_frame import StockFrame
 
 from td.client import TDClient
 from td.utils import TDUtilities
@@ -54,9 +54,11 @@ class PyRobot():
     def pre_market_open(self) -> bool:
 
         pre_market_start_time = datetime.utcnow().replace(
-            hour=12, minute=00, second=00)
+            hour=12, minute=00, second=00
+        ).timestamp()
         market_start_time = datetime.now().replace(
-            hour=13, minute=30, second=00)
+            hour=13, minute=30, second=00
+        ).timestamp()
         right_now = datetime.utcnow().replace().timestamp()
 
         if market_start_time >= right_now >= pre_market_start_time:
@@ -68,9 +70,11 @@ class PyRobot():
     def post_market_open(self) -> bool:
 
         post_market_end_time = datetime.utcnow().replace(
-            hour=22, minute=30, second=00)
+            hour=22, minute=30, second=00
+        ).timestamp()
         market_end_time = datetime.utcnow().replace(
-            hour=20, minute=00, second=00)
+            hour=20, minute=00, second=00
+        ).timestamp()
         right_now = datetime.utcnow().replace().timestamp()
 
         if post_market_end_time >= right_now >= market_end_time:
@@ -82,10 +86,14 @@ class PyRobot():
     def regular_market_open(self) -> bool:
 
         market_start_time = datetime.utcnow().replace(
-            hour=13, minute=30, second=00)
+            hour=13, minute=30, second=00
+        ).timestamp()
+
         market_end_time = datetime.utcnow().replace(
-            hour=20, minute=00, second=00)
-        right_now = datetime.utcnow().replace().timestamp()
+            hour=20, minute=00, second=00
+        ).timestamp()
+
+        right_now = datetime.utcnow().timestamp()
 
         if market_end_time >= right_now >= market_start_time:
             return True
@@ -168,7 +176,7 @@ class PyRobot():
             for candle in historical_price_response['candles']:
 
                 new_price_mini_dict = {}
-                new_price_mini_dict['symbol'] = candle['symbol']
+                new_price_mini_dict['symbol'] = symbol
                 new_price_mini_dict['open'] = candle['open']
                 new_price_mini_dict['close'] = candle['close']
                 new_price_mini_dict['high'] = candle['high']

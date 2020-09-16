@@ -35,7 +35,7 @@ class StockFrame():
 
         return self.symbol_groups
 
-    def symbol_rolling_groups(self, size: int) -> RollingGroupBy:
+    def symbol_rolling_groups(self, size: int) -> RollingGroupby:
 
         if not self._symbol_groups:
             self.symbol_groups
@@ -48,8 +48,8 @@ class StockFrame():
 
         # make data frame
         price_df = pd.DataFrame(data=self._data)
-        price_df = self._parse_datatime_column(price_df=price_df)
-        price_df = self._set_multi_index(price=price_df)
+        price_df = self._parse_datetime_column(price_df=price_df)
+        price_df = self._set_multi_index(price_df=price_df)
         return price_df
 
     def _parse_datetime_column(self, price_df: pd.DataFrame) -> pd.DataFrame:

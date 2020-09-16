@@ -1,9 +1,13 @@
-from typing import Union
-from typing import Dict
+import numpy as np
+
+from pandas import DataFrame
+from typing import Tuple
 from typing import List
 from typing import Optional
+from typing import Iterable
 
 
+from stock_frame import StockFrame
 from td.client import TDClient
 
 
@@ -21,7 +25,7 @@ class Portfolio():
     def add_position(self, symbol: str, asset_type: str, purchase_date: Optional[str], quantity: int = 0, purchase_price: float = 0.0):
         self.positions[symbol] = {}
         self.positions[symbol]['symbol'] = symbol
-        self.positions[symbbol]['quantity'] = quantity
+        self.positions[symbol]['quantity'] = quantity
         self.positions[symbol]['purchase_date'] = purchase_date
         self.positions[symbol]['purchase_price'] = purchase_price
         self.positions[symbol]['asset_type'] = asset_type
@@ -47,11 +51,11 @@ class Portfolio():
 
     def remove_positons(self, symbol: str) -> Tuple[bool, str]:
 
-        if symbol in self.positons:
-            del self.positons[symbol]
+        if symbol in self.positions:
+            del self.positions[symbol]
             return (True, "{Symbol} was successfully removed.".format(symbol=symbol))
         else:
-            return (False, "{Symbol} did not exist in the portfolio".formate(symbol=symbol))
+            return (False, "{Symbol} did not exist in the portfolio".format(symbol=symbol))
 
     def in_portfolio(self, symbol: str) -> bool:
         if symbol in self.positions:

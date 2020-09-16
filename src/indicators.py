@@ -2,11 +2,13 @@ import operator
 import numpy as np
 import pandas as pd
 
-from typing import Union
-from typing import Dict
+from typing import Any
 from typing import List
-from typing import Optional
+from typing import Dict
 from typing import Tuple
+from typing import Union
+from typing import Optional
+from typing import Iterable
 
 from pyrobot.stock_frame import StockFrame
 

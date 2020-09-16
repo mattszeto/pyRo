@@ -8,8 +8,8 @@ from datetime import datetime
 from datetime import timedelta
 from configparser import ConfigParser
 
-from pyrobot.robot import PyRobot
-from pyrobot.indicators import Indicators
+from robot import PyRobot
+from indicators import Indicators
 
 # Grab the config file values.
 config = ConfigParser()
@@ -65,23 +65,22 @@ trading_robot.portfolio.add_position(
 # test addition of positions
 # pprint.pprint(trading_robot.portfolio.positions)
 
-# Check to see if market open
+# Check to see if market open (testing)
+if trading_robot.regular_market_open:
+    print('Market Open')
+else:
+    print('Market Closed')
 
-# if trading_robot.regular_market_open:
-#     print('Market Open')
-# else:
-#     print('Market Closed')
 
+if trading_robot.pre_market_open:
+    print('Pre-Market Open')
+else:
+    print('Pre-Market Closed')
 
-# if trading_robot.pre_market_open:
-#     print('Pre-Market Open')
-# else:
-#     print('Pre-Market Closed')
-
-# if trading_robot.post_market_open:
-#     print('Post-Market Open')
-# else:
-#     print('Post-Market Closed')
+if trading_robot.post_market_open:
+    print('Post-Market Open')
+else:
+    print('Post-Market Closed')
 
 # Grab quotes in our portfolio
 current_quotes = trading_robot.grab_current_quotes()
