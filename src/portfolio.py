@@ -22,6 +22,24 @@ class Portfolio():
         self.risk_tolerance = 0.0
         self.account_number = account_number
 
+# Ownership status =================================================================
+
+    def get_ownership_status(self, symbol: str) -> bool:
+
+        if self.in_portfolio(symbol=symbol) and self.positions[symbol]['ownership_status']:
+            return self.positions[symbol]['ownership_status']
+        else:
+            return False
+
+    def set_ownership_status(self, symbol: str, ownership: bool) -> None:
+
+        if self.in_portfolio(symbol=symbol) and self.positions[symbol]['ownership_status']:
+            self.positions[symbol]['ownership_status'] = ownership
+        else:
+            raise KeyError(
+                "Can't set ownership status, as you do not have the symbol in your portfolio."
+            )
+
     def add_position(self, symbol: str, asset_type: str, purchase_date: Optional[str], quantity: int = 0, purchase_price: float = 0.0):
         self.positions[symbol] = {}
         self.positions[symbol]['symbol'] = symbol
@@ -95,3 +113,39 @@ class Portfolio():
 
     def total_market_value(self):
         pass
+
+    def _grab_daily_historical_prices(self) -> StockFrame:
+
+        new_prices = []
+
+        # Loop through each position.
+        for symbol in self.positions:
+
+            # Grab the historical prices.
+            historical_prices_response = self.td_client.get_price_history(
+                symbol=symbol,
+                period_type='year',
+                period=1,
+                frequency_type='daily',
+                frequency=1,
+                extended_hours=True
+            )
+
+            # Loop through the candles.
+            for candle in historical_prices_response['candles']:
+
+                new_price_mini_dict = {}
+                new_price_mini_dict['symbol'] = symbol
+                new_price_mini_dict['open'] = candle['open']
+                new_price_mini_dict['close'] = candle['close']
+                new_price_mini_dict['high'] = candle['high']
+                new_price_mini_dict['low'] = candle['low']
+                new_price_mini_dict['volume'] = candle['volume']
+                new_price_mini_dict['datetime'] = candle['datetime']
+                new_prices.append(new_price_mini_dict)
+
+        # Create and set the StockFrame
+        self._stock_frame_daily = StockFrame(data=new_prices)
+        self._stock_frame_daily.create_frame()
+
+        return self._stock_frame_daily

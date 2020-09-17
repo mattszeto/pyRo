@@ -1,15 +1,15 @@
-import time as true_time
-import pprint
-import pathlib
-import operator
-import pandas as pd
-
-from datetime import datetime
-from datetime import timedelta
 from configparser import ConfigParser
+from datetime import timedelta
+from datetime import datetime
+import pandas as pd
+import operator
+import pathlib
+import pprint
+import time as true_time
 
 from robot import PyRobot
 from indicators import Indicators
+
 
 # Grab the config file values.
 config = ConfigParser()
@@ -133,3 +133,56 @@ new_trade.add_stop_loss(
 )
 
 # pprint.pprint(new_trade.order)
+
+indicator_client = Indicators(price_data_frame=stock_frame)
+
+indicator_client.rsi(period=14)
+
+indicator_client.sma(period=200)
+
+indicator_client.ema(period=50)
+
+indicator_client.set_indicator_signals(
+    indicator='rsi',
+    buy=40.0,
+    sell=20.0,
+    condition_buy=operator.ge,
+    condition_sell=operator.le
+)
+
+trades_dict = {
+    'MSFT': {
+        'trade_func': trading_robot.trades['long_msft'],
+        'trade_id': trading_robot.trades['long_msft'].trade_id
+    }
+}
+
+
+while True:
+
+    latest_bars = trading_robot.get_latest_bar()
+
+    stock_frame.add_rows(data=latest_bars)
+
+    # refresh indicators
+    indicator_client.refresh()
+
+    print("="*50)
+    print("Current Stock Frame")
+    print("-"*50)
+    print(stock_frame.symbol_groups.tail())
+    print("-"*50)
+    print("")
+
+    # check signals
+    signals = indicator_client.check_signals()
+
+    # how to execute trades
+    #trading_robot.execute_signals(signals=signals, trades_to_execute=trades_dict)
+
+    # grab last bar, this is after adding new rows
+    last_bar_timestamp = trading_robot.stock_frame.frame.tail(
+        1).index.get_level_values(1)
+
+    # wait till next bar
+    trading_robot.wait_till_next_bar(last_bar_timestamp=last_bar_timestamp)

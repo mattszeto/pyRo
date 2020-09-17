@@ -68,6 +68,7 @@ class Indicators():
         del locals_data['self']
 
         column_name = 'rsi'
+        self._current_indicators[column_name] = {}
         self._current_indicators[column_name]['args'] = locals_data
         self._current_indicators[column_name]['func'] = self.rsi
 
@@ -158,6 +159,7 @@ class Indicators():
             indicator_function(**indicator_arguments)
 
     def check_signals(self) -> Union[pd.DataFrame, None]:
+
         signals_df = self._stock_frame._check_signals(
             indicators=self._indicator_signals)
 
