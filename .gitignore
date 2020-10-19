@@ -134,3 +134,5 @@ configs/
 
 setup.py
 td_state.json
+
+.idea
