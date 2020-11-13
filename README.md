@@ -17,3 +17,7 @@ decided to open this to the open-source community because I haven't found time t
 would love any help or suggestions on the application.
 
 Feel free to open a pr.
+
+
+#### Uses:
+[td-ameritrade-python-api](https://github.com/areed1192/td-ameritrade-python-api)
