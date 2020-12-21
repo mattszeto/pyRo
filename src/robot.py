@@ -1,6 +1,5 @@
 import json
 import time as time_true
-import pprint
 import pathlib
 import pandas as pd
 
@@ -407,7 +406,7 @@ class PyRobot():
 
         return order_dict
 
-    # Save orders ======================================
+# Save orders ======================================
 
     def save_orders(self, order_response_dict: dict) -> bool:
 
