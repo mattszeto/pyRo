@@ -1,3 +1,5 @@
+PROJECT DEPRECIATED -> Moved to another repo (coming soon)
+
 ## PyRo
 
 Python trading Robot that can track historical stock data or real-time stock market data for algorithmic trading. It can store and keep track of trades made, including
